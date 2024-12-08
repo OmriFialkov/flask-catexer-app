@@ -8,10 +8,10 @@ app = Flask(__name__)
 # Connect to the MySQL database
 def get_db_connection():
     connection = pymysql.connect(
-        host="db",  # Host matches the service name of the database in docker-compose
-        user="user",  # MySQL user from docker-compose
-        password="password",  # MySQL password from docker-compose
-        database="flaskdb",  # Database name from init.sql
+        host =os.getenv("MYSQL_HOST"),  # Host matches the service name of the database in docker-compose
+        user=os.getenv("MYSQL_USER"),  # MySQL user from docker-compose
+        password=os.getenv("MYSQL_PASSWORD"),  # MySQL password from docker-compose
+        database=os.getenv("MYSQL_DATABASE")  # Database name from init.sql
     )
     return connection
 
@@ -32,4 +32,4 @@ def index():
     return render_template("index.html", url=url)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
