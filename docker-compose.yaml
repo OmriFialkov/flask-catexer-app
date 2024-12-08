@@ -7,11 +7,11 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - FLASK_ENV=development # need it on flask.
-      - MYSQL_HOST=db          # Host name of the MySQL service
-      - MYSQL_USER=user        # User for Flask to connect to the database
-      - MYSQL_PASSWORD=1234    # Password for the user
-      - MYSQL_DATABASE=flaskdb # Database name
+      - FLASK_ENV=${FLASK_ENV}         # Fetch from .env file
+      - MYSQL_HOST=${MYSQL_HOST}       # Fetch from .env file
+      - MYSQL_USER=${MYSQL_USER}       # Fetch from .env file
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD} # Fetch from .env file
+      - MYSQL_DATABASE=${MYSQL_DATABASE} # Fetch from .env file
     depends_on:
       - db
     networks:
@@ -19,11 +19,11 @@ services:
 
   db:
     image: mysql:5.7  # Downgrade to MySQL 5.7
-    environment: # must use first 2 environment variables.
-      - MYSQL_USER=user        # User for MySQL setup 
-      - MYSQL_PASSWORD=1234    # Password for the user
-      - MYSQL_DATABASE=flaskdb # Database name to initialize
-      - MYSQL_ROOT_PASSWORD=1234 # Root password for MySQL
+    environment:
+      - MYSQL_USER=${MYSQL_USER}          # Fetch from .env file
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}  # Fetch from .env file
+      - MYSQL_DATABASE=${MYSQL_DATABASE}  # Fetch from .env file
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} # Fetch from .env file
     ports:
       - "3308:3306"  # Host's port 3308 maps to container's port 3306
     volumes:
