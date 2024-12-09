@@ -14,3 +14,12 @@ INSERT INTO images (image_url) VALUES
     ("https://img.freepik.com/free-photo/portrait-cute-boxer-dog_181624-47633.jpg"),
     ("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlO4erNhFuKmV1TNly5fu8RbSFftERnpUCUg&s"),
     ("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0qDKYT9QCq6VnNu4Rlo-rCzD5CDpwt4JCBvIJ5dhI1NpNjyE0tQl740Kf5lUWwe8T6UA&usqp=CAU");
+
+
+CREATE TABLE IF NOT EXISTS visitor_counter (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    count INT NOT NULL DEFAULT 0
+);
+
+-- Initialize the counter with a starting value of 0, for more rows add (0), (value of another row).
+INSERT INTO visitor_counter (count) VALUES (0); 
