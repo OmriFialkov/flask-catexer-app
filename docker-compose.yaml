@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   flask-app:
-    image: crazyguy888/flask-compose-catproject:latest
+    image: crazyguy888/flask-compose-catproject:latest # to which image docker compose directing to install.
     ports:
       - "${PORT}:${PORT}" # using the PORT variable from the .env file.
     environment:
