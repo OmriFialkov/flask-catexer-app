@@ -37,6 +37,7 @@ def index():
     # Fetch image URLs from the database
     cursor.execute("SELECT image_url FROM images")
     result = cursor.fetchall()
+    #print(result)
     connection.close()
 
     # Transform the result into a list of URLs
