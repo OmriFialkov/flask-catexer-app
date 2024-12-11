@@ -15,8 +15,8 @@ def get_db_connection():
     )
     return connection
 
-@app.route("/")
-def index():
+@app.route("/") 
+def index(): 
     # connect to db
     connection = get_db_connection()
     cursor = connection.cursor()
