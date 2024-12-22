@@ -7,45 +7,48 @@ app = Flask(__name__)
 
 # Connect to the MySQL database with pymysql
 def get_db_connection():
-    connection = pymysql.connect(
-        host =os.getenv("MYSQL_HOST"),  # Host matches the service name of the database in docker-compose
-        user=os.getenv("MYSQL_USER"),  # MySQL user from docker-compose
-        password=os.getenv("MYSQL_PASSWORD"),  # MySQL password from docker-compose
-        database=os.getenv("MYSQL_DATABASE")  # Database name from init.sql
+    return pymysql.connect(
+        host=os.getenv("MYSQL_HOST"),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        database=os.getenv("MYSQL_DATABASE")
     )
-    return connection
 
-@app.route("/") 
-def index(): 
-    # connect to db
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    
-    #_____________________________________________________________________________________________
+@app.route("/")
+def index():
+    try:
+        # Connect to DB
+        connection = get_db_connection()
+        cursor = connection.cursor()
 
-    # increment counter by one, +1
-    cursor.execute("UPDATE visitor_counter SET count = count + 1 where id = 1")
-    connection.commit()
+        # Increment counter
+        cursor.execute("UPDATE visitor_counter SET count = count + 1 WHERE id = 1")
+        connection.commit()
 
-    # fetch updated count from db to variable.
-    cursor.execute("SELECT count FROM visitor_counter WHERE id = 1")
-    visitor_count = cursor.fetchone()[0] # fetches last query one row as tuple, [0] accessing only element.
+        # Fetch updated count
+        cursor.execute("SELECT count FROM visitor_counter WHERE id = 1")
+        visitor_count = cursor.fetchone()[0]
 
-    # docker compose down -v - will restart the counter, but without -v - volume will keep counter.
-    #_____________________________________________________________________________________________
+        # Fetch image URLs
+        cursor.execute("SELECT image_url FROM images")
+        result = cursor.fetchall()
+        connection.close()
 
-    # Fetch image URLs from the database
-    cursor.execute("SELECT image_url FROM images")
-    result = cursor.fetchall()
-    #print(result)
-    connection.close()
+        # Transform the result into a list of URLs
+        images = [row[0] for row in result]
 
-    # Transform the result into a list of URLs
-    images = [row[0] for row in result]
-    
-    # Pick a random image from the list
-    url = random.choice(images)
-    return render_template("index.html", url=url, visitor_count=visitor_count)
+        # Pick a random image
+        url = random.choice(images) if images else None
+    except Exception as e:
+        print(f"Error: {e}")  # Log the error for debugging
+        visitor_count = "unknown"
+        url = None
+
+    # Fallback rendering
+    if url:
+        return render_template("index.html", url=url, visitor_count=visitor_count)
+    else:
+        return render_template("index.html", url=None, visitor_count=visitor_count, message="No images available.")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000))) # if port env var is blank port will be 5000.
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))

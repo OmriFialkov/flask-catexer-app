@@ -29,8 +29,15 @@
   <body>
     <div class="container">
       <h4>dog ( god ) image of the GET :)</h4>
-      <img src="{{url}}" />
+      {% if url %}
+        <img src="{{ url }}" />
+      {% else %}
+        <p>No image available.</p>
+      {% endif %}
       <p>Visitors Number: <strong>{{ visitor_count }}</strong></p>
+      {% if message %}
+        <p><strong>{{ message }}</strong></p>
+      {% endif %}
     </div>
   </body>
 </html>
