@@ -5,7 +5,7 @@ import pymysql
 
 app = Flask(__name__)
 
-# Connect to the MySQL database
+# Connect to the MySQL database with pymysql
 def get_db_connection():
     connection = pymysql.connect(
         host =os.getenv("MYSQL_HOST"),  # Host matches the service name of the database in docker-compose
