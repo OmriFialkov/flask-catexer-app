@@ -43,13 +43,13 @@ pipeline {
             steps {
                 sh 'sleep 5'
                 sh '''
-                if ! docker logs flask; then
+                if ! docker-compose logs; then
                 echo "container logs checking failed!"
                 exit 1
                 fi
                 '''
                 sh '''
-                if ! curl -f http://localhost:5000; then
+                if ! curl -f http://localhost:5002; then
                     echo "App is not reachable.."
                     exit 1
                 fi
