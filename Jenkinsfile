@@ -41,7 +41,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'sleep 5'
+                sh 'sleep 10'
                 sh '''
                 if ! docker-compose logs; then
                 echo "container logs checking failed!"
@@ -49,21 +49,10 @@ pipeline {
                 fi
                 '''
                 sh '''
-                    for i in {1..5}; do
-                        if curl -f http://localhost:5002; then
-                            echo "App is reachable."
-                            break  # Exit the loop on first success
+                        if ! curl -f http://localhost:5002; then
+                            echo "App is not reachable.."
+                            exit 1
                         fi
-                        echo "Attempt $i failed."
-                        sleep 1
-                    done
-
-                # After the loop, check if all 5 attempts failed
-                    if [ $i -eq 5 ]; then
-                        echo "App is not reachable after 5 attempts."
-                        exit 1  # Fail the Jenkins job if all attempts failed
-                    fi
-
                 '''
             }
         }
