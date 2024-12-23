@@ -1,6 +1,9 @@
 pipeline {
     agent any
-
+     environment {
+        MYSQL_PASSWORD = credentials('Juserpass')  // Use your actual Jenkins secret ID here
+        MYSQL_ROOT_PASSWORD = credentials('Jrootpass')  // Use your actual Jenkins secret ID here
+    }
     triggers {
         pollSCM('* * * * *')  // Poll SCM every minute
     }
