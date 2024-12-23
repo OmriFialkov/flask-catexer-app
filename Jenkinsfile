@@ -27,6 +27,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'git clone https://github.com/OmriFialkov/flask-catexer-app.git'
+                sh 'cp /var/lib/.env /var/lib/jenkins/workspace/jenkins'
                 sh 'cd flask-catexer-app && docker build -t flask .'
             }
         }
