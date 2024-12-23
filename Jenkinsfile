@@ -55,7 +55,7 @@ pipeline {
                         break  # Exit the loop on the first success
                     fi
                     echo "Attempt $i failed."
-                    sleep 3
+                    sleep 6
                 done
                 
                 # Check if the loop completed without a successful attempt
