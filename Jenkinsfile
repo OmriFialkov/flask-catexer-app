@@ -16,6 +16,7 @@ pipeline {
                     docker rm -f $(docker ps -aq)
                 fi
                 if [ -d "./flask-catexer-app" ]; then rm -rf "./flask-catexer-app"; fi
+                if [ "$(docker images -q flask)" ]; then docker rmi -f flask; fi
                 '''
                 // no [[ ]] !! its sh not bash
             }
