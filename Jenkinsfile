@@ -30,7 +30,6 @@ pipeline {
         stage('Run') {
             steps {
                 sh '''
-                docker ps -a
                 docker run --rm -d -p 5000:5000 --name flask flask
                 docker ps
                 '''
