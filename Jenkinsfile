@@ -26,7 +26,7 @@ pipeline {
                 sh 'cp /var/lib/.env /var/lib/jenkins/workspace/jenkins'
                 sh 'cd flask-catexer-app'
                 sh 'docker-compose build --no-cache'
-                docker image prune -f
+                sh 'docker image prune -f'
             }
         }
         stage('Push') {
