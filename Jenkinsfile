@@ -12,11 +12,7 @@ pipeline {
         stage('Cleanup') {
             steps {
                 sh '''
-                if [ "$(docker ps -q)" ]; then
-                   docker stop $(docker ps -q)
-                fi
-                if [ "$(docker ps -aq)" ]; then
-                    docker rm -f $(docker ps -aq)
+                docker-compose down -v
                 fi
                 if [ -d "./flask-catexer-app" ]; then rm -rf "./flask-catexer-app"; fi
                 if [ "$(docker images -q flask)" ]; then docker rmi -f flask; fi
