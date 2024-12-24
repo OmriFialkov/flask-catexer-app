@@ -12,7 +12,7 @@ services:
       - MYSQL_HOST=${MYSQL_HOST}       # Fetch from .env file
       - MYSQL_USER=${MYSQL_USER}       # Fetch from .env file
       - MYSQL_PASSWORD=${MYSQL_PASSWORD} # Fetch from .env file
-      - MYSQL_DATABASE=${MYSQL_DATABASE} # Fetch from .env file
+      - MYSQL_DATABASE=${MYSQL_DATABASE} # Fetch from .env file.
       - PORT=${PORT}                   # Fetch from .env file, pass the PORT variable to the container.
     depends_on:
       - db
