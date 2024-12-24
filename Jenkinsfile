@@ -15,7 +15,7 @@ pipeline {
                 docker-compose down -v
                 if [ -d "./flask-catexer-app" ]; then rm -rf "./flask-catexer-app"; fi
                 '''
-                // no [[ ]] !! its sh not bash
+                // no [[ ]] !! its sh not bash!
             }
         }
         stage('Build') {
