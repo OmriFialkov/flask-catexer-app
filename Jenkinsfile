@@ -14,7 +14,6 @@ pipeline {
                 sh '''
                 docker-compose down -v
                 if [ -d "./flask-catexer-app" ]; then rm -rf "./flask-catexer-app"; fi
-                if [ "$(docker images -q flask)" ]; then docker rmi -f flask; fi
                 '''
                 // no [[ ]] !! its sh not bash
             }
@@ -23,13 +22,15 @@ pipeline {
             steps {
                 sh 'git clone https://github.com/OmriFialkov/flask-catexer-app.git'
                 sh 'cp /var/lib/.env /var/lib/jenkins/workspace/jenkins'
-                sh 'cd flask-catexer-app && docker build -t flask .'
+                sh 'cd flask-catexer-app'
+                sh 'docker-compose build --no-cache'
+                // dont forget to add push stage between build and run. 
             }
         }
         stage('Run') {
             steps {
                 sh '''
-                docker-compose up --build -d
+                docker-compose up -d
                 docker-compose ps
                 '''
             }

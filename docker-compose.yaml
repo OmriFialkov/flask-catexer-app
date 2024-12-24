@@ -2,6 +2,8 @@ version: "3.8"
 
 services:
   flask-app:
+    build: . # build from the current directory, dockerfile.
+    container_name: flask
     image: crazyguy888/flask-compose-catproject:latest # to which image docker compose directing to install.
     ports:
       - "${PORT}:${PORT}" # using the PORT variable from the .env file.
@@ -19,6 +21,7 @@ services:
 
   db:
     image: mysql:5.7  # Downgrade to MySQL 5.7
+    container_name: mysql
     environment:
       - MYSQL_USER=${MYSQL_USER}          # Fetch from .env file
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}  # Fetch from .env file
