@@ -47,16 +47,15 @@ pipeline {
                 for i in $(seq 1 5); do
                     if curl -f http://localhost:5002; then
                         echo "App is reachable."
-                        break  # Exit the loop on the first success
+                        break 
                     fi
                     echo "Attempt $i failed."
                     sleep 6
                 done
                 
-                # Check if the loop completed without a successful attempt
                 if [ $i -eq 5 ]; then
                     echo "App is not reachable after 5 attempts."
-                    exit 1  # Fail the Jenkins job if all attempts failed
+                    exit 1 
                 fi
                 '''
             }
