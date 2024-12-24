@@ -13,7 +13,6 @@ pipeline {
             steps {
                 sh '''
                 docker-compose down -v
-                fi
                 if [ -d "./flask-catexer-app" ]; then rm -rf "./flask-catexer-app"; fi
                 if [ "$(docker images -q flask)" ]; then docker rmi -f flask; fi
                 '''
