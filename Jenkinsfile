@@ -3,6 +3,7 @@ pipeline {
      environment {
         MYSQL_PASSWORD = credentials('Juserpass')  // Use your actual Jenkins secret ID here
         MYSQL_ROOT_PASSWORD = credentials('Jrootpass')  // Use your actual Jenkins secret ID here
+        
     }
     triggers {
         pollSCM('* * * * *')  // Poll SCM every minute
@@ -11,8 +12,10 @@ pipeline {
     stages {
         stage('Cleanup') {
             steps {
+                // prune removes none-none images' leftovers from previous runs and builds..
                 sh '''
                 docker-compose down -v
+                docker image prune -f
                 if [ -d "./flask-catexer-app" ]; then rm -rf "./flask-catexer-app"; fi
                 '''
                 // no [[ ]] !! its sh not bash!
@@ -27,6 +30,18 @@ pipeline {
                 // dont forget to add push stage between build and run. 
             }
         }
+        stage('Push') {
+    steps {
+        script {
+            withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                sh '''
+                echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                docker push crazyguy888/flask-compose-catproject:latest
+                '''
+            }
+        }
+    }
+}
         stage('Run') {
             steps {
                 sh '''
