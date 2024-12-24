@@ -15,7 +15,6 @@ pipeline {
                 // prune removes none-none images' leftovers from previous runs and builds..
                 sh '''
                 docker-compose down -v
-                docker image prune -f
                 if [ -d "./flask-catexer-app" ]; then rm -rf "./flask-catexer-app"; fi
                 '''
                 // no [[ ]] !! its sh not bash!
@@ -27,7 +26,7 @@ pipeline {
                 sh 'cp /var/lib/.env /var/lib/jenkins/workspace/jenkins'
                 sh 'cd flask-catexer-app'
                 sh 'docker-compose build --no-cache'
-                // dont forget to add push stage between build and run. 
+                docker image prune -f
             }
         }
         stage('Push') {
