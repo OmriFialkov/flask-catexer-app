@@ -130,6 +130,13 @@ pipeline {
             sshagent(['ec2-ssh']) { // Use Jenkins SSH private key credential
                 sh """
                 #!/bin/bash
+
+                echo "ip var: \${PUBLIC_IP}"
+                
+                if [ -z "\${PUBLIC_IP}" ]; then
+                    echo "ERROR - Public IP var is not set correctly.."
+                    exit 1
+                fi
                 
                 echo "Copying project files to the EC2 instance..."
                 scp /var/lib/jenkins/workspace/jenkins/docker-compose.yaml ec2-user@\${PUBLIC_IP}:/home/ec2-user/
