@@ -77,7 +77,40 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying.....'
+                sh """
+                #!/bin/bash
+
+                INSTANCE_ID=$(aws ec2 run-instances \
+                    --region us-east-1 \
+                    --image-id ami-01816d07b1128cd2d \
+                    --instance-type t2.micro \
+                    --key-name privatekey \
+                    --security-groups flask-mysql \
+                    --iam-instance-profile Name=access-to-s3 \
+                    --user-data file:///var/lib/jenkins/scripts/userdata.sh \
+                    --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=project}]' \
+                    --query 'Instances[0].InstanceId' \
+                    --output text)
+                
+                echo "instance-id: $INSTANCE_ID"
+                echo ""
+                
+                echo "waiting for machine to run for fetching ip address"
+                aws ec2 wait instance-running --instance-ids "$INSTANCE_ID"
+                
+                if [ -z "$INSTANCE_ID" ]; then echo "Error: INSTANCE_ID is empty"
+                 exit 1
+                fi
+                
+                PUBLIC_IP=$(aws ec2 describe-instances \
+                    --region us-east-1 \
+                    --instance-ids "$INSTANCE_ID" \
+                    --query 'Reservations[0].Instances[0].PublicIpAddress' \
+                    --output text)
+                
+                echo ""
+                echo "ip : $PUBLIC_IP"
+                """
             }
         }
     }
