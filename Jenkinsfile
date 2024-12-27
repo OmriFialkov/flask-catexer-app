@@ -133,7 +133,7 @@ pipeline {
                 sh """
                 #!/bin/bash
 
-                PUBLIC_IP=$(cat /var/lib/jenkins/workspace/jenkins/ip.txt)
+                PUBLIC_IP=\$(cat /var/lib/jenkins/workspace/jenkins/ip.txt)
                 export PUBLIC_IP
 
                 
