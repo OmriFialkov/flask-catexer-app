@@ -3,7 +3,6 @@ pipeline {
      environment {
         MYSQL_PASSWORD = credentials('Juserpass')  // Use your actual Jenkins secret ID here
         MYSQL_ROOT_PASSWORD = credentials('Jrootpass')  // Use your actual Jenkins secret ID here
-        PUBLIC_IP = ''  // Define a blank PUBLIC_IP variable to see between stages.
     }
     triggers {
         pollSCM('* * * * *')  // Poll SCM every minute
@@ -15,6 +14,7 @@ pipeline {
                 // prune removes none-none images' leftovers from previous runs and builds..
                 sh '''
                 docker-compose down -v
+                if [ -f "./ip.txt" ]; then rm -rf "./ip.txt"; fi
                 if [ -d "./flask-catexer-app" ]; then rm -rf "./flask-catexer-app"; fi
                 '''
                 // no [[ ]] !! its sh not bash!
@@ -119,6 +119,8 @@ pipeline {
                 
                 echo ""
                 echo "Public IP: \$PUBLIC_IP"
+
+                echo "\$PUBLIC_IP" > /var/lib/jenkins/workspace/jenkins/ip.txt
                 """
             }
         }
@@ -131,8 +133,11 @@ pipeline {
                 sh """
                 #!/bin/bash
 
-                echo "ip var: \${PUBLIC_IP}"
+                PUBLIC_IP=$(cat /var/lib/jenkins/workspace/jenkins/ip.txt)
+                export PUBLIC_IP
+
                 
+                echo "ip var: \${PUBLIC_IP}"
                 if [ -z "\${PUBLIC_IP}" ]; then
                     echo "ERROR - Public IP var is not set correctly.."
                     exit 1
