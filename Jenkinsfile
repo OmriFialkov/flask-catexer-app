@@ -144,11 +144,11 @@ pipeline {
                 fi
                 
                 echo "Copying project files to the EC2 instance..."
-                scp /var/lib/jenkins/workspace/jenkins/docker-compose.yaml ec2-user@\${PUBLIC_IP}:/home/ec2-user/
-                scp /var/lib/jenkins/workspace/jenkins/init.sql ec2-user@\${PUBLIC_IP}:/home/ec2-user/
+                scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/docker-compose.yaml ec2-user@\${PUBLIC_IP}:/home/ec2-user/
+                scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/init.sql ec2-user@\${PUBLIC_IP}:/home/ec2-user/
                 
                 echo "Running docker-compose on the EC2 instance..."
-                ssh ec2-user@\${PUBLIC_IP} << EOF
+                ssh -o StrictHostKeyChecking=no ec2-user@\${PUBLIC_IP} << EOF
                 cd /home/ec2-user/
                 ls
     
