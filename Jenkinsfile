@@ -102,7 +102,7 @@ pipeline {
                 
                 # Wait for the instance to be running
                 echo "Waiting for machine to run for fetching IP address..."
-                aws ec2 wait instance-running --instance-ids "\$INSTANCE_ID"
+                aws ec2 wait instance-running --instance-ids "\$INSTANCE_ID" --region us-east-1
                 
                 # Check if INSTANCE_ID is empty
                 if [ -z "\$INSTANCE_ID" ]; then 
