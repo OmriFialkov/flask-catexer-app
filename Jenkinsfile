@@ -76,9 +76,14 @@ pipeline {
             }
         }
         stage('Deploy') {
-            steps {
+    steps {
+        script {
+            withCredentials([usernamePassword(credentialsId: 'aws-creds', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                 sh """
                 #!/bin/bash
+                
+                export AWS_ACCESS_KEY_ID=\$AWS_ACCESS_KEY_ID
+                export AWS_SECRET_ACCESS_KEY=\$AWS_SECRET_ACCESS_KEY
                 
                 INSTANCE_ID=\$(aws ec2 run-instances \
                     --region us-east-1 \
@@ -95,13 +100,17 @@ pipeline {
                 echo "instance-id: \$INSTANCE_ID"
                 echo ""
                 
-                echo "waiting for machine to run for fetching ip address"
+                # Wait for the instance to be running
+                echo "Waiting for machine to run for fetching IP address..."
                 aws ec2 wait instance-running --instance-ids "\$INSTANCE_ID"
                 
-                if [ -z "\$INSTANCE_ID" ]; then echo "Error: INSTANCE_ID is empty"
-                 exit 1
+                # Check if INSTANCE_ID is empty
+                if [ -z "\$INSTANCE_ID" ]; then 
+                    echo "Error: INSTANCE_ID is empty"
+                    exit 1
                 fi
                 
+                # Fetch the public IP address of the instance
                 PUBLIC_IP=\$(aws ec2 describe-instances \
                     --region us-east-1 \
                     --instance-ids "\$INSTANCE_ID" \
@@ -109,10 +118,12 @@ pipeline {
                     --output text)
                 
                 echo ""
-                echo "ip : \$PUBLIC_IP"
+                echo "Public IP: \$PUBLIC_IP"
                 """
-
             }
         }
+    }
+}
+
     }
 }
