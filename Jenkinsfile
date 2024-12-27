@@ -3,7 +3,7 @@ pipeline {
      environment {
         MYSQL_PASSWORD = credentials('Juserpass')  // Use your actual Jenkins secret ID here
         MYSQL_ROOT_PASSWORD = credentials('Jrootpass')  // Use your actual Jenkins secret ID here
-        
+        PUBLIC_IP = ''  // Define a blank PUBLIC_IP variable to see between stages.
     }
     triggers {
         pollSCM('* * * * *')  // Poll SCM every minute
@@ -100,7 +100,7 @@ pipeline {
                 echo "instance-id: \$INSTANCE_ID"
                 echo ""
                 
-                # Wait for the instance to be running
+                # Wait for the instance to be running, added region parameter for wait because of error.
                 echo "Waiting for machine to run for fetching IP address..."
                 aws ec2 wait instance-running --instance-ids "\$INSTANCE_ID" --region us-east-1
                 
@@ -119,6 +119,33 @@ pipeline {
                 
                 echo ""
                 echo "Public IP: \$PUBLIC_IP"
+                """
+            }
+        }
+    }
+}
+        stage('Configure and Run Docker') {
+    steps {
+        script {
+            sshagent(['ec2-ssh']) { // Use Jenkins SSH private key credential
+                sh """
+                #!/bin/bash
+                
+                echo "Copying project files to the EC2 instance..."
+                scp /var/lib/jenkins/workspace/jenkins/docker-compose.yaml ec2-user@\${PUBLIC_IP}:/home/ec2-user/
+                scp /var/lib/jenkins/workspace/jenkins/init.sql ec2-user@\${PUBLIC_IP}:/home/ec2-user/
+                
+                echo "Running docker-compose on the EC2 instance..."
+                ssh ec2-user@\${PUBLIC_IP} << EOF
+                cd /home/ec2-user/
+                ls
+    
+                echo "Running project..."
+                docker-compose up -d
+                docker-compose ps
+                EOF
+                
+                echo "Project is now running on the EC2 instance."
                 """
             }
         }
