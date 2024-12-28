@@ -133,6 +133,7 @@ pipeline {
                 sh """
                 #!/bin/bash
 
+                # added \ for cat to escape it so groovy doesnt recognize $ as its own.
                 PUBLIC_IP=\$(cat /var/lib/jenkins/workspace/jenkins/ip.txt)
                 export PUBLIC_IP
 
@@ -146,14 +147,17 @@ pipeline {
                 echo "Copying project files to the EC2 instance..."
                 scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/flask-catexer-app/docker-compose.yaml ec2-user@\${PUBLIC_IP}:/home/ec2-user/
                 scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/flask-catexer-app/init.sql ec2-user@\${PUBLIC_IP}:/home/ec2-user/
-                #scp to .env that fetched from s3 earlier..
+                scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/.env ec2-user@\${PUBLIC_IP}:/home/ec2-user/
                 
-                echo "Running docker-compose on the EC2 instance..."
+                echo "adding db passwords to .env securely..."
                 ssh -o StrictHostKeyChecking=no ec2-user@\${PUBLIC_IP} << EOF
+                echo "MYSQL_PASSWORD=\${MYSQL_PASSWORD}" >> /home/ec2-user/.env
+                echo "MYSQL_ROOT_PASSWORD=\${MYSQL_ROOT_PASSWORD}" >> /home/ec2-user/.env
+                cat /home/ec2-user/.env
+
+                echo "running project now..."
                 cd /home/ec2-user/
                 ls
-    
-                echo "Running project..."
                 docker-compose up -d
                 docker-compose ps
                 EOF
