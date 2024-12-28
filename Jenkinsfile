@@ -157,6 +157,8 @@ pipeline {
                     echo "sadly still waiting.."
                     sleep 3
                 done
+                getent group docker
+                systemctl status docker
                 
                 echo "adding db passwords to .env manually and securely..."
                 echo "MYSQL_PASSWORD=\${MYSQL_PASSWORD}" >> /home/ec2-user/.env
