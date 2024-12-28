@@ -133,7 +133,7 @@ pipeline {
                 sh """
                 #!/bin/bash
 
-                # added \ for cat to escape it so groovy doesnt recognize $ as its own.
+                # Use \\ for cat to escape \$ so Groovy doesn’t misinterpret it.
                 PUBLIC_IP=\$(cat /var/lib/jenkins/workspace/jenkins/ip.txt)
                 export PUBLIC_IP
 
