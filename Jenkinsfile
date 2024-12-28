@@ -150,6 +150,7 @@ pipeline {
                 scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/.env ec2-user@\${PUBLIC_IP}:/home/ec2-user/
                 
                 echo "adding db passwords to .env securely..."
+                sleep 30
                 ssh -o StrictHostKeyChecking=no ec2-user@\${PUBLIC_IP} << EOF
                 echo "MYSQL_PASSWORD=\${MYSQL_PASSWORD}" >> /home/ec2-user/.env
                 echo "MYSQL_ROOT_PASSWORD=\${MYSQL_ROOT_PASSWORD}" >> /home/ec2-user/.env
