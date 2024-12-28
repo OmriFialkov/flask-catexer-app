@@ -157,8 +157,6 @@ pipeline {
                     echo "sadly still waiting.."
                     sleep 3
                 done
-                getent group docker
-                systemctl status docker
                 
                 echo "adding db passwords to .env manually and securely..."
                 echo "MYSQL_PASSWORD=\${MYSQL_PASSWORD}" >> /home/ec2-user/.env
@@ -166,6 +164,7 @@ pipeline {
                 cat /home/ec2-user/.env
 
                 echo "running project now..."
+                newgrp docker
                 cd /home/ec2-user/
                 ls -la
                 docker-compose up -d
