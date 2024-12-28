@@ -121,6 +121,8 @@ pipeline {
                 echo "Public IP: \$PUBLIC_IP"
 
                 echo "\$PUBLIC_IP" > /var/lib/jenkins/workspace/jenkins/ip.txt
+
+                aws s3 cp s3://docker-gifs-project/.env /home/ec2-user/
                 """
             }
         }
@@ -144,8 +146,8 @@ pipeline {
                 fi
                 
                 echo "Copying project files to the EC2 instance..."
-                scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/docker-compose.yaml ec2-user@\${PUBLIC_IP}:/home/ec2-user/
-                scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/init.sql ec2-user@\${PUBLIC_IP}:/home/ec2-user/
+                scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/flask-catexer-app/docker-compose.yaml ec2-user@\${PUBLIC_IP}:/home/ec2-user/
+                scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/flask-catexer-app/init.sql ec2-user@\${PUBLIC_IP}:/home/ec2-user/
                 
                 echo "Running docker-compose on the EC2 instance..."
                 ssh -o StrictHostKeyChecking=no ec2-user@\${PUBLIC_IP} << EOF
