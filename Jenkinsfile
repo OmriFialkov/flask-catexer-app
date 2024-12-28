@@ -158,6 +158,9 @@ pipeline {
                 echo "running project now..."
                 cd /home/ec2-user/
                 ls
+                echo "PATH: \$PATH"
+                which docker-compose
+                docker-compose --version
                 docker-compose up -d
                 docker-compose ps
                 EOF
