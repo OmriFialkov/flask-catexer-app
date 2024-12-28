@@ -148,25 +148,28 @@ pipeline {
                 scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/flask-catexer-app/docker-compose.yaml ec2-user@\${PUBLIC_IP}:/home/ec2-user/
                 scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/flask-catexer-app/init.sql ec2-user@\${PUBLIC_IP}:/home/ec2-user/
                 scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/.env ec2-user@\${PUBLIC_IP}:/home/ec2-user/
-                
-                echo "adding db passwords to .env securely..."
-                sleep 30
+
+                echo "using ssh to log to the ec2 machine.."
                 ssh -o StrictHostKeyChecking=no ec2-user@\${PUBLIC_IP} << EOF
+
+                echo "now in ec2, waiting for user-data script to end successfully ( installing docker ).."
+                while [ ! -f /var/lib/cloud/instance/boot-finished ]; do
+                    echo "sadly still waiting.."
+                    sleep 3
+                done
+                
+                echo "adding db passwords to .env manually and securely..."
                 echo "MYSQL_PASSWORD=\${MYSQL_PASSWORD}" >> /home/ec2-user/.env
                 echo "MYSQL_ROOT_PASSWORD=\${MYSQL_ROOT_PASSWORD}" >> /home/ec2-user/.env
                 cat /home/ec2-user/.env
 
                 echo "running project now..."
                 cd /home/ec2-user/
-                ls
-                echo "PATH: \$PATH"
-                which docker-compose
-                docker-compose --version
+                ls -la
                 docker-compose up -d
-                docker-compose ps
                 EOF
                 
-                echo "Project is now running on the EC2 instance."
+                echo "Project is now running on the EC2 instance, i worked my ass out for 3 days :(."
                 """
             }
         }
