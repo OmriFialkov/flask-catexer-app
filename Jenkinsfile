@@ -29,7 +29,7 @@ pipeline {
                 sh 'docker image prune -f'
             }
         }
-        stage('Push') {
+        stage('Push Docker') {
     steps {
         script {
             withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
@@ -51,7 +51,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'sleep 5'
+                sh 'sleep 3'
                 sh '''
                 if ! docker-compose logs; then
                 echo "container logs checking failed!"
@@ -75,7 +75,7 @@ pipeline {
                 '''
             }
         }
-        stage('Deploy') {
+        stage('Deploy - Setup EC2') {
     steps {
         script {
             withCredentials([usernamePassword(credentialsId: 'aws-creds', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
@@ -124,7 +124,7 @@ pipeline {
         }
     }
 }
-        stage('Configure and Run Docker') {
+        stage('Deploy - Running project') {
     steps {
         script {
             sshagent(['ec2-ssh']) { // Use Jenkins SSH private key credential
