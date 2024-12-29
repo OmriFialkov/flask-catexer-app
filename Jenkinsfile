@@ -117,9 +117,7 @@ pipeline {
                     --query 'Reservations[0].Instances[0].PublicIpAddress' \
                     --output text)
                 
-                echo ""
                 echo "Public IP: \$PUBLIC_IP"
-
                 echo "\$PUBLIC_IP" > /var/lib/jenkins/workspace/jenkins/ip.txt
                 """
             }
@@ -137,20 +135,27 @@ pipeline {
                 PUBLIC_IP=\$(cat /var/lib/jenkins/workspace/jenkins/ip.txt)
                 export PUBLIC_IP
 
-                
-                echo "ip var: \${PUBLIC_IP}"
+                echo "checking whether ip fetched successfully to proceed..
                 if [ -z "\${PUBLIC_IP}" ]; then
-                    echo "ERROR - Public IP var is not set correctly.."
+                    echo "ERROR - Public IP is not set, exiting.."
                     exit 1
                 fi
+
+                echo "proceeding only when ec2 is up and accessible using ssh.."
+                while ! nc -z \${PUBLIC_IP} 22; do
+                    echo "waiting for ssh check to succeed.."
+                    sleep 3
+                done
                 
-                echo "Copying project files to the EC2 instance..."
-                scp -v -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/flask-catexer-app/docker-compose.yaml ec2-user@\${PUBLIC_IP}:/home/ec2-user/
-                scp -v -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/flask-catexer-app/init.sql ec2-user@\${PUBLIC_IP}:/home/ec2-user/
-                scp -v -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/.env ec2-user@\${PUBLIC_IP}:/home/ec2-user/
+                echo "copying project files to the EC2 instance..."
+                scp -v -o StrictHostKeyChecking=no \
+                    /var/lib/jenkins/workspace/jenkins/flask-catexer-app/docker-compose.yaml \
+                    /var/lib/jenkins/workspace/jenkins/flask-catexer-app/init.sql \
+                    /var/lib/jenkins/workspace/jenkins/.env \
+                    ec2-user@\${PUBLIC_IP}:/home/ec2-user/
 
                 echo "using ssh to log to the ec2 machine.."
-                ssh -o StrictHostKeyChecking=no ec2-user@\${PUBLIC_IP} << EOF
+                ssh -v -o StrictHostKeyChecking=no ec2-user@\${PUBLIC_IP} << EOF
 
                 echo "now in ec2, waiting for user-data script to end successfully ( installing docker ).."
                 while [ ! -f /var/lib/cloud/instance/boot-finished ]; do
