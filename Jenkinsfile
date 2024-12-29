@@ -130,12 +130,10 @@ pipeline {
             sshagent(['ec2-ssh']) { // Use Jenkins SSH private key credential
                 sh """
                 #!/bin/bash
-
-                # Use \\ for cat to escape \$ so Groovy doesn’t misinterpret it.
-                PUBLIC_IP=\$(cat /var/lib/jenkins/workspace/jenkins/ip.txt)
+                
+                PUBLIC_IP=\$(cat /var/lib/jenkins/workspace/jenkins/ip.txt) #Use \\ for cat to escape \$ so Groovy doesn’t misinterpret it.
                 export PUBLIC_IP
-
-                echo "checking whether ip fetched successfully to proceed..
+                echo "checking whether ip fetched successfully to proceed.."
                 if [ -z "\${PUBLIC_IP}" ]; then
                     echo "ERROR - Public IP is not set, exiting.."
                     exit 1
@@ -171,11 +169,10 @@ pipeline {
                 echo "running project now..."
                 newgrp docker
                 cd /home/ec2-user/
-                ls -la
                 docker-compose up -d
                 EOF
                 
-                echo "Project is now running on the EC2 instance, i worked my ass out for 3 days :(."
+                echo "Project is finally running on the EC2 instance! :("
                 """
             }
         }
