@@ -145,9 +145,9 @@ pipeline {
                 fi
                 
                 echo "Copying project files to the EC2 instance..."
-                scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/flask-catexer-app/docker-compose.yaml ec2-user@\${PUBLIC_IP}:/home/ec2-user/
-                scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/flask-catexer-app/init.sql ec2-user@\${PUBLIC_IP}:/home/ec2-user/
-                scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/.env ec2-user@\${PUBLIC_IP}:/home/ec2-user/
+                scp -v -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/flask-catexer-app/docker-compose.yaml ec2-user@\${PUBLIC_IP}:/home/ec2-user/
+                scp -v -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/flask-catexer-app/init.sql ec2-user@\${PUBLIC_IP}:/home/ec2-user/
+                scp -v -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/jenkins/.env ec2-user@\${PUBLIC_IP}:/home/ec2-user/
 
                 echo "using ssh to log to the ec2 machine.."
                 ssh -o StrictHostKeyChecking=no ec2-user@\${PUBLIC_IP} << EOF
