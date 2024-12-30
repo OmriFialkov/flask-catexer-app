@@ -1,8 +1,8 @@
 pipeline {
     agent any
      environment {
-        MYSQL_PASSWORD = credentials('Juserpass')  // Use your actual Jenkins secret ID here
-        MYSQL_ROOT_PASSWORD = credentials('Jrootpass')  // Use your actual Jenkins secret ID here
+        MYSQL_PASSWORD = credentials('Juserpass')  // Use your actual Jenkins secret ID here - going to docker compose when running d-c up - finds it.
+        MYSQL_ROOT_PASSWORD = credentials('Jrootpass')  // Use your actual Jenkins secret ID here - same here.
     }
     triggers {
         pollSCM('* * * * *')  // Poll SCM every minute
@@ -13,7 +13,10 @@ pipeline {
             steps {
                 sh '''
                 pwd
+                cd /flask-catexer-app
                 docker-compose down -v
+                cd ..
+                pwd
                 if [ -d "./flask-catexer-app" ]; then rm -rf "./flask-catexer-app"; fi
                 '''
                 // no [[ ]] !! its sh not bash!
