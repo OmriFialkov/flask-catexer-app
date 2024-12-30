@@ -11,7 +11,6 @@ pipeline {
     stages {
         stage('Cleanup') {
             steps {
-                // prune removes none-none images' leftovers from previous runs and builds..
                 sh '''
                 docker-compose down -v
                 if [ -f "./ip.txt" ]; then rm -rf "./ip.txt"; fi
@@ -27,6 +26,7 @@ pipeline {
                 sh 'cd flask-catexer-app'
                 sh 'docker-compose build --no-cache'
                 sh 'docker image prune -f'
+                // prune removes untagged images - leftover from previous build's docker-compose build.
             }
         }
         stage('Push Docker') {
@@ -147,14 +147,15 @@ pipeline {
                 done
                 
                 echo "copying project files to the EC2 instance..."
-                scp -v -o StrictHostKeyChecking=no \
+                scp -o StrictHostKeyChecking=no \
                     /var/lib/jenkins/workspace/jenkins/flask-catexer-app/docker-compose.yaml \
                     /var/lib/jenkins/workspace/jenkins/flask-catexer-app/init.sql \
                     /var/lib/jenkins/workspace/jenkins/.env \
                     ec2-user@\${PUBLIC_IP}:/home/ec2-user/
 
+                # -v for verbose - logging ssh / scp process if got errors.
                 echo "using ssh to log to the ec2 machine.."
-                ssh -v -o StrictHostKeyChecking=no ec2-user@\${PUBLIC_IP} << EOF
+                ssh -o StrictHostKeyChecking=no ec2-user@\${PUBLIC_IP} << EOF
 
                 echo "now in ec2, waiting for user-data script to end successfully ( installing docker ).."
                 while [ ! -f /var/lib/cloud/instance/boot-finished ]; do
@@ -170,7 +171,7 @@ pipeline {
                 echo "running project now..."
                 newgrp docker
                 cd /home/ec2-user/
-                docker-compose up -d
+                docker-compose up -d --quiet-pull
                 EOF
                 
                 echo "Project is finally running on the EC2 instance! :("
