@@ -13,7 +13,7 @@ pipeline {
             steps {
                 sh '''
                 pwd
-                cd /flask-catexer-app
+                cd flask-catexer-app/
                 docker-compose down -v
                 cd ..
                 pwd
