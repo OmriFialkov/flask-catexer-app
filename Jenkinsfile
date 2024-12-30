@@ -118,7 +118,7 @@ pipeline {
                     --output text)
                 
                 echo "Public IP: \$PUBLIC_IP"
-                echo "\$PUBLIC_IP" > /var/lib/jenkins/workspace/jenkins/ip.txt
+                env.PUBLIC_IP = \${PUBLIC_IP)
                 """
             }
         }
@@ -131,17 +131,17 @@ pipeline {
                 sh """
                 #!/bin/bash
                 
-                PUBLIC_IP=\$(cat /var/lib/jenkins/workspace/jenkins/ip.txt) #Use \\ for cat to escape \$ so Groovy doesn’t misinterpret it.
-                export PUBLIC_IP
+                PUBLIC_IP=\${env.PUBLIC_IP} #Use \\ for cat to escape \$ so Groovy doesn’t misinterpret it.
+                
                 echo "checking whether ip fetched successfully to proceed.."
                 if [ -z "\${PUBLIC_IP}" ]; then
                     echo "ERROR - Public IP is not set, exiting.."
                     exit 1
                 fi
 
-                echo "proceeding only when ec2 is up and accessible using ssh.."
+                echo "proceeding when ec2 is accessible over ssh ( checking sshd, ssh server status, whether it is listening on port 22 to connection requests. ).."
                 while ! nc -z \${PUBLIC_IP} 22; do
-                    echo "waiting for ssh check to succeed.."
+                    echo "waiting for ssh test to succeed.."
                     sleep 3
                 done
                 
