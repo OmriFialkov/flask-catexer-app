@@ -14,8 +14,6 @@ pipeline {
                 sh '''
                 pwd
                 docker-compose down -v
-                if [-f ./env ]; then rm -rf "./env"; fi
-                if [ -f "./ip.txt" ]; then rm -rf "./ip.txt"; fi
                 if [ -d "./flask-catexer-app" ]; then rm -rf "./flask-catexer-app"; fi
                 '''
                 // no [[ ]] !! its sh not bash!
@@ -46,6 +44,7 @@ pipeline {
         stage('Run') {
             steps {
                 sh '''
+                pwd
                 docker-compose up -d
                 docker-compose ps
                 '''
