@@ -118,7 +118,7 @@ pipeline {
                     --output text)
                 
                 echo "Public IP: \$PUBLIC_IP"
-                env.PUBLIC_IP = \${PUBLIC_IP}
+                echo "\$PUBLIC_IP" > /var/lib/jenkins/workspace/jenkins/ip.txt
                 """
             }
         }
@@ -131,7 +131,8 @@ pipeline {
                 sh """
                 #!/bin/bash
                 
-                PUBLIC_IP=\${env.PUBLIC_IP} #Use \\ for cat to escape \$ so Groovy doesn’t misinterpret it.
+                PUBLIC_IP=\$(cat /var/lib/jenkins/workspace/jenkins/ip.txt) #Use \\ for cat to escape \$ so Groovy doesn’t misinterpret it.
+                export PUBLIC_IP
                 
                 echo "checking whether ip fetched successfully to proceed.."
                 if [ -z "\${PUBLIC_IP}" ]; then
