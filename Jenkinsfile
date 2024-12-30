@@ -118,7 +118,7 @@ pipeline {
                     --output text)
                 
                 echo "Public IP: \$PUBLIC_IP"
-                env.PUBLIC_IP = \${PUBLIC_IP)
+                env.PUBLIC_IP = \${PUBLIC_IP}
                 """
             }
         }
