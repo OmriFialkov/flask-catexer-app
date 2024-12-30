@@ -12,7 +12,9 @@ pipeline {
         stage('Cleanup') {
             steps {
                 sh '''
+                pwd
                 docker-compose down -v
+                if [-f ./env ]; then rm -rf "./env"; fi
                 if [ -f "./ip.txt" ]; then rm -rf "./ip.txt"; fi
                 if [ -d "./flask-catexer-app" ]; then rm -rf "./flask-catexer-app"; fi
                 '''
@@ -22,7 +24,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'git clone https://github.com/OmriFialkov/flask-catexer-app.git'
-                sh 'cp /var/lib/.env /var/lib/jenkins/workspace/jenkins'
+                sh 'cp /var/lib/.env /var/lib/jenkins/workspace/jenkins/flask-catexer-app'
                 sh 'cd flask-catexer-app'
                 sh 'docker-compose build --no-cache'
                 sh 'docker image prune -f'
@@ -118,7 +120,7 @@ pipeline {
                     --output text)
                 
                 echo "Public IP: \$PUBLIC_IP"
-                echo "\$PUBLIC_IP" > /var/lib/jenkins/workspace/jenkins/ip.txt
+                echo "\$PUBLIC_IP" > /var/lib/jenkins/workspace/jenkins/flask-catexer-app/ip.txt
                 """
             }
         }
@@ -131,7 +133,7 @@ pipeline {
                 sh """
                 #!/bin/bash
                 
-                PUBLIC_IP=\$(cat /var/lib/jenkins/workspace/jenkins/ip.txt) #Use \\ for cat to escape \$ so Groovy doesn’t misinterpret it.
+                PUBLIC_IP=\$(cat /var/lib/jenkins/workspace/jenkins/flask-catexer-app/ip.txt) #Use \\ for cat to escape \$ so Groovy doesn’t misinterpret it.
                 export PUBLIC_IP
                 
                 echo "checking whether ip fetched successfully to proceed.."
