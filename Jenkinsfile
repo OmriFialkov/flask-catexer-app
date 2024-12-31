@@ -35,6 +35,7 @@ pipeline {
                 sh 'git clone https://github.com/OmriFialkov/flask-catexer-app.git'
                 sh 'cp /var/lib/.env /var/lib/jenkins/workspace/jenkins/flask-catexer-app'
                 sh 'cd flask-catexer-app'
+                sh 'pwd'
                 sh 'docker-compose build --no-cache'
                 sh 'docker image prune -f'
                 // prune removes untagged images - leftover from previous build's docker-compose build.
