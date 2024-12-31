@@ -67,8 +67,10 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'sleep 3'
                 sh '''
+                sleep 3
+                pwd
+                cd flask-catexer-app/
                 if ! docker-compose logs; then
                 echo "container logs checking failed!"
                 exit 1
