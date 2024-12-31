@@ -12,7 +12,6 @@ pipeline {
         stage('Cleanup') {
             steps {
                  script {
-                    echo "Starting cleanup..."
                     sh '''
                     # Navigate to the project directory if it exists
                     if [ -d "./flask-catexer-app" ]; then
@@ -25,6 +24,7 @@ pipeline {
                     echo "Cleaning workspace directory: ${WORKSPACE}"
                     cd ${WORKSPACE}
                     rm -rf ./*
+                    ls -la
                     '''
                 }
                 // no [[ ]] !! its sh not bash!
@@ -32,12 +32,14 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'git clone https://github.com/OmriFialkov/flask-catexer-app.git'
-                sh 'cp /var/lib/.env /var/lib/jenkins/workspace/jenkins/flask-catexer-app'
-                sh 'cd flask-catexer-app/'
-                sh 'pwd'
-                sh 'docker-compose build --no-cache'
-                sh 'docker image prune -f'
+                sh """
+                git clone https://github.com/OmriFialkov/flask-catexer-app.git
+                cp /var/lib/.env /var/lib/jenkins/workspace/jenkins/flask-catexer-app
+                cd flask-catexer-app/
+                pwd
+                docker-compose build --no-cache
+                docker image prune -f
+                """
                 // prune removes untagged images - leftover from previous build's docker-compose build.
             }
         }
