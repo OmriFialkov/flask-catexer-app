@@ -11,14 +11,21 @@ pipeline {
     stages {
         stage('Cleanup') {
             steps {
-                sh '''
-                pwd
-                cd flask-catexer-app/
-                docker-compose down -v
-                cd ..
-                pwd
-                if [ -d "./flask-catexer-app" ]; then rm -rf "./flask-catexer-app"; fi
-                '''
+                 script {
+                    echo "Starting cleanup..."
+                    sh '''
+                    # Navigate to the project directory if it exists
+                    if [ -d "./flask-catexer-app" ]; then
+                        cd flask-catexer-app
+                        docker-compose down -v || true  # Bring down running containers; ignore errors if none exist
+                        cd ..
+                    fi
+                    
+                    # Remove the entire workspace directory
+                    echo "Cleaning workspace directory: ${WORKSPACE}"
+                    rm -rf ${WORKSPACE}
+                    '''
+                }
                 // no [[ ]] !! its sh not bash!
             }
         }
