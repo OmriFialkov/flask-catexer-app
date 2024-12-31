@@ -168,7 +168,7 @@ pipeline {
                 scp -o StrictHostKeyChecking=no \
                     /var/lib/jenkins/workspace/jenkins/flask-catexer-app/docker-compose.yaml \
                     /var/lib/jenkins/workspace/jenkins/flask-catexer-app/init.sql \
-                    /var/lib/jenkins/workspace/jenkins/.env \
+                    /var/lib/jenkins/workspace/jenkins/flask-catexer-app/.env \
                     ec2-user@\${PUBLIC_IP}:/home/ec2-user/
 
                 # -v for verbose - logging ssh / scp process if got errors.
