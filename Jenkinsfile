@@ -23,7 +23,8 @@ pipeline {
                     
                     # Remove the entire workspace directory
                     echo "Cleaning workspace directory: ${WORKSPACE}"
-                    rm -rf ${WORKSPACE}
+                    cd ${WORKSPACE}
+                    rm -rf ./*
                     '''
                 }
                 // no [[ ]] !! its sh not bash!
