@@ -58,6 +58,7 @@ pipeline {
         stage('Run') {
             steps {
                 sh '''
+                cd flask-catexer-app/
                 pwd
                 docker-compose up -d
                 docker-compose ps
