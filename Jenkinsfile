@@ -13,18 +13,16 @@ pipeline {
             steps {
                  script {
                     sh '''
-                    # Navigate to the project directory if it exists
+                    echo "Bringing local containers down, ignores errors"
                     if [ -d "./flask-catexer-app" ]; then
                         cd flask-catexer-app
-                        docker-compose down -v || true  # Bring down running containers; ignore errors if none exist
+                        docker-compose down -v || true
                         cd ..
                     fi
-                    
-                    # Remove the entire workspace directory
-                    echo "Cleaning workspace directory: ${WORKSPACE}"
+
+                    echo "Cleaning workspace"
                     cd ${WORKSPACE}
                     rm -rf ./*
-                    ls -la
                     '''
                 }
                 // no [[ ]] !! its sh not bash!
@@ -36,7 +34,6 @@ pipeline {
                 git clone https://github.com/OmriFialkov/flask-catexer-app.git
                 cp /var/lib/.env /var/lib/jenkins/workspace/jenkins/flask-catexer-app
                 cd flask-catexer-app/
-                pwd
                 docker-compose build --no-cache
                 docker image prune -f
                 """
@@ -59,7 +56,6 @@ pipeline {
             steps {
                 sh '''
                 cd flask-catexer-app/
-                pwd
                 docker-compose up -d
                 docker-compose ps
                 '''
@@ -68,8 +64,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                sleep 3
-                pwd
+                sleep 2
                 cd flask-catexer-app/
                 if ! docker-compose logs; then
                 echo "container logs checking failed!"
