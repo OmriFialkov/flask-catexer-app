@@ -34,7 +34,7 @@ pipeline {
                 git clone https://github.com/OmriFialkov/flask-catexer-app.git
                 cp /var/lib/.env /var/lib/jenkins/workspace/jenkins/flask-catexer-app
                 cd flask-catexer-app/
-                docker-compose build --no-cache
+                TAG=${BUILD_NUMBER} docker-compose build --no-cache
                 docker image prune -f
                 """
                 // prune removes untagged images - leftover from previous build's docker-compose build.
@@ -46,6 +46,8 @@ pipeline {
             withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                 sh '''
                 echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                docker tag crazyguy888/flask-compose-catproject:${BUILD_NUMBER} crazyguy888/flask-compose-catproject:latest
+                docker push crazyguy888/flask-compose-catproject:${BUILD_NUMBER}
                 docker push crazyguy888/flask-compose-catproject:latest
                 '''
             }
