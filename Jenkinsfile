@@ -13,12 +13,13 @@ pipeline {
             steps {
                  script {
                     sh '''
-                    echo "Bringing local containers down, ignores errors"
+                    echo "Bringing local containers and images down, ignores errors"
                     if [ -d "./flask-catexer-app" ]; then
                         cd flask-catexer-app
                         docker-compose down -v || true
                         cd ..
                     fi
+                    docker rmi -f $(docker images "crazyguy888/flask-compose-catproject" -q) || true
 
                     echo "Cleaning workspace"
                     cd ${WORKSPACE}
@@ -35,9 +36,8 @@ pipeline {
                 cp /var/lib/.env /var/lib/jenkins/workspace/jenkins/flask-catexer-app
                 cd flask-catexer-app/
                 TAG=${BUILD_NUMBER} docker-compose build --no-cache
-                docker image prune -f
                 """
-                // prune removes untagged images - leftover from previous build's docker-compose build.
+                // docker image prune -f removes untagged images - leftover from previous build's docker-compose build.
             }
         }
         stage('Push Docker') {
